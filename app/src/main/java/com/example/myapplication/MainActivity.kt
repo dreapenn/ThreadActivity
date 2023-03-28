@@ -13,34 +13,44 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.Button
 import android.widget.TextView
 import com.example.myapplication.databinding.ActivityMainBinding
+import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {
 
-    val timerHandler = Handler(Looper.getMainLooper()){
-        timerTextView.text = it.what.toString()
-
-        true
-    }
-
     val timerTextView : TextView by lazy{
         findViewById(R.id.timerTextView)
+    }
+    val button : Button by lazy{
+        findViewById(R.id.button)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        Thread{
-            for(i in 100 downTo (1)){
-                Log.d("Countdown", i.toString())
-                Thread.sleep(1000)
-                timerHandler.sendEmptyMessage(i)
+        button.setOnClickListener{
+            CoroutineScope(Job() + Dispatchers.Default).launch {
+                for (i in 100 downTo (1)) {
+                    Log.d("Countdown", i.toString())
+                    withContext(Dispatchers.Main){
+                        timerTextView.text = i.toString()
+                    }
+                    delay(1000)
+                }
             }
-        }.start()
+
+        }
+
+
+
 
 
     }
+
+
 
 }
